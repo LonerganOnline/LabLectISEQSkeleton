@@ -33,7 +33,6 @@ public class TestDB extends javax.swing.JFrame {
             rowSet.setPassword("pass");
             rowSet.setCommand("SELECT * FROM prices limit 5");
             rowSet.execute();
-            String results = "";
 
             ResultSetMetaData metaData = rowSet.getMetaData();
 
@@ -58,7 +57,6 @@ public class TestDB extends javax.swing.JFrame {
             }
 
             output.setText(results);
-
         }//end try
         catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.toString());
@@ -145,27 +143,19 @@ public class TestDB extends javax.swing.JFrame {
 
     private void spButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spButtonActionPerformed
         //btn3
-        //output.setText("");
-        try {
-            rowSet.setCommand("SELECT * FROM prices limit 5");
-            rowSet.execute();
-
-        } catch (SQLException ex) {
-            System.out.println(ex.toString());
-            JOptionPane.showMessageDialog(null, ex.toString());
-
-        }
-        //updateOutput("select * from prices");
+        String input = JOptionPane.showInputDialog(null, "enter a valid ID");
+        //int value = Integer.parseInt(input);
+        updateOutput("select * from prices where company_name ="+input);
     }//GEN-LAST:event_spButtonActionPerformed
 
     private void alphaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alphaButtonActionPerformed
-//btn1        
+        //btn1        
         updateOutput("SELECT * FROM prices limit 11");
     }//GEN-LAST:event_alphaButtonActionPerformed
 
     private void priceIncrButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceIncrButtonActionPerformed
         //btn2
-        //updateOutput("");
+        updateOutput("select * , (current_price - yesterdays_price) as max from prices order by max desc");
 
     }//GEN-LAST:event_priceIncrButtonActionPerformed
 
@@ -180,6 +170,31 @@ public class TestDB extends javax.swing.JFrame {
             System.out.println(query);
             rowSet.setCommand(query);
             rowSet.execute();
+
+            ResultSetMetaData metaData = rowSet.getMetaData();
+
+            int numberOfColumns = metaData.getColumnCount();
+
+            String temp;
+            System.out.println(numberOfColumns);
+            for (int i = 1; i < 9; i++) {
+                temp = String.format("%-18s|", colNnames[i-1]);
+                results += temp;
+            }
+            results += "\n";
+
+            while (rowSet.next()) {
+
+                for (int i = 1; i < 9; i++) {
+                    //String temp = String.format("%-20s= %s" ,resultSet.getObject(i) );
+                    temp = String.format("%-18s|", rowSet.getObject(i));
+
+                    results += temp;
+                }//end for
+                results += "\n";
+            }
+
+            output.setText(results);
 
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(null, ex.toString());
@@ -233,7 +248,7 @@ public class TestDB extends javax.swing.JFrame {
 
     private JdbcRowSetImpl rowSet = new JdbcRowSetImpl();
     private String colNnames[] = new String[]{"company ID", "Company Name", "Curr Price", "Price Yest", "Trd Yest", "Yr Low", "Year High", "Year listed"};
-
+    private String results = "";
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton alphaButton;
     private javax.swing.JButton batchButton;
