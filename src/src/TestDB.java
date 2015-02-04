@@ -1,5 +1,13 @@
 package src;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import javax.swing.JOptionPane;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -10,15 +18,64 @@ package src;
  * @author Alan.Ryan
  */
 public class TestDB extends javax.swing.JFrame {
-    
-      /**
+
+    /**
      * Creates new form TestDB
      */
     public TestDB() {
         initComponents();
-       
+
+        try {
+
+            //create the connection object
+            //ATTN: username and password must be changed depending on the settings on your database server
+            Connection connection = DriverManager.getConnection("jdbc:mysql://itshares.student.litdom.lit.ie:3306/iseq3", "sd4user", "pass");
+
+            //create a statement object.
+            //We will use this object to carry our query to the database
+            Statement statement = connection.createStatement();
+
+            //exexute our query, which will lead to the return of a resultset
+            ResultSet resultSet = statement.executeQuery("select * from prices limit 5");
+
+            String results = "";
+
+            ResultSetMetaData metaData = resultSet.getMetaData();
+
+            int numberOfColumns = metaData.getColumnCount();
+
+            for (int i = 1; i < numberOfColumns; i++) {
+                String temp =  String.format( "%-23s|",metaData.getColumnName(i));
+                results += temp;
+            }
+
+            results += "\n";
+
+            while (resultSet.next()) {
+                for (int i = 1; i < numberOfColumns; i++) {
+                    //String temp = String.format("%-20s= %s" ,resultSet.getObject(i) );
+                    String temp =  String.format( "%-23s|",resultSet.getObject(i));
+                    
+                    results += temp;
+
+                    //"%-10s %-10s %-10s\n"
+                }//end for
+
+                results += "\n";
+            }//end while
+
+            statement.close();
+            connection.close();
+
+            output.setText(results);
+        }//end try
+        catch (SQLException sqlex) {
+            JOptionPane.showMessageDialog(null, sqlex.toString());
+            System.exit(0);
+        }
+
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -96,23 +153,23 @@ public class TestDB extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void spButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spButtonActionPerformed
-    
-      
+
+
     }//GEN-LAST:event_spButtonActionPerformed
 
     private void alphaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alphaButtonActionPerformed
-            
-        
+
+
     }//GEN-LAST:event_alphaButtonActionPerformed
 
     private void priceIncrButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceIncrButtonActionPerformed
 
-    
+
     }//GEN-LAST:event_priceIncrButtonActionPerformed
 
     private void batchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batchButtonActionPerformed
 
-      
+
     }//GEN-LAST:event_batchButtonActionPerformed
 
     /**
