@@ -28,22 +28,20 @@ public class TestDB extends javax.swing.JFrame {
 
         try {
 
-            JdbcRowSetImpl rowSet = new JdbcRowSetImpl();
-
             rowSet.setUrl("jdbc:mysql://itshares.student.litdom.lit.ie:3306/iseq3");
             rowSet.setUsername("sd4user");
             rowSet.setPassword("pass");
             rowSet.setCommand("SELECT * FROM prices limit 5");
             rowSet.execute();
-            System.out.println(rowSet.toString());
             String results = "";
 
             ResultSetMetaData metaData = rowSet.getMetaData();
 
             int numberOfColumns = metaData.getColumnCount();
+
             String temp;
-            for (int i = 1; i < numberOfColumns; i++) {
-                temp = String.format("%-23s|", metaData.getColumnName(i));
+            for (int i = 0; i < numberOfColumns - 1; i++) {
+                temp = String.format("%-18s|", colNnames[i]);
                 results += temp;
             }
             results += "\n";
@@ -52,11 +50,20 @@ public class TestDB extends javax.swing.JFrame {
 
                 for (int i = 1; i < numberOfColumns; i++) {
                     //String temp = String.format("%-20s= %s" ,resultSet.getObject(i) );
-                    temp = String.format("%-23s|", rowSet.getObject(i));
+                    temp = String.format("%-18s|", rowSet.getObject(i));
 
                     results += temp;
                 }//end for
                 results += "\n";
+            }
+
+            output.setText(results);
+
+        }//end try
+        catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+            System.exit(0);
+        }
 
     }
 
@@ -137,24 +144,50 @@ public class TestDB extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void spButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_spButtonActionPerformed
+        //btn3
+        //output.setText("");
+        try {
+            rowSet.setCommand("SELECT * FROM prices limit 5");
+            rowSet.execute();
 
+        } catch (SQLException ex) {
+            System.out.println(ex.toString());
+            JOptionPane.showMessageDialog(null, ex.toString());
 
+        }
+        //updateOutput("select * from prices");
     }//GEN-LAST:event_spButtonActionPerformed
 
     private void alphaButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_alphaButtonActionPerformed
-
-
+//btn1        
+        updateOutput("SELECT * FROM prices limit 11");
     }//GEN-LAST:event_alphaButtonActionPerformed
 
     private void priceIncrButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_priceIncrButtonActionPerformed
-
+        //btn2
+        //updateOutput("");
 
     }//GEN-LAST:event_priceIncrButtonActionPerformed
 
     private void batchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_batchButtonActionPerformed
-
-
+        //btn4
+        //updateOutput("");
     }//GEN-LAST:event_batchButtonActionPerformed
+
+    private void updateOutput(String query) {
+        output.setText("");
+        try {
+            System.out.println(query);
+            rowSet.setCommand(query);
+            rowSet.execute();
+
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(null, ex.toString());
+            System.exit(0);
+
+        }
+
+    }
 
     /**
      * @param args the command line arguments
@@ -197,6 +230,10 @@ public class TestDB extends javax.swing.JFrame {
             }
         });
     }
+
+    private JdbcRowSetImpl rowSet = new JdbcRowSetImpl();
+    private String colNnames[] = new String[]{"company ID", "Company Name", "Curr Price", "Price Yest", "Trd Yest", "Yr Low", "Year High", "Year listed"};
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton alphaButton;
     private javax.swing.JButton batchButton;
