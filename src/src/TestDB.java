@@ -1,5 +1,6 @@
 package src;
 
+import com.sun.rowset.JdbcRowSetImpl;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -7,12 +8,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import javax.swing.JOptionPane;
+import javax.sql.RowSet;
 
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 /**
  *
  * @author Alan.Ryan
@@ -27,52 +28,35 @@ public class TestDB extends javax.swing.JFrame {
 
         try {
 
-            //create the connection object
-            //ATTN: username and password must be changed depending on the settings on your database server
-            Connection connection = DriverManager.getConnection("jdbc:mysql://itshares.student.litdom.lit.ie:3306/iseq3", "sd4user", "pass");
+            JdbcRowSetImpl rowSet = new JdbcRowSetImpl();
 
-            //create a statement object.
-            //We will use this object to carry our query to the database
-            Statement statement = connection.createStatement();
-
-            //exexute our query, which will lead to the return of a resultset
-            ResultSet resultSet = statement.executeQuery("select * from prices limit 5");
-
+            rowSet.setUrl("jdbc:mysql://itshares.student.litdom.lit.ie:3306/iseq3");
+            rowSet.setUsername("sd4user");
+            rowSet.setPassword("pass");
+            rowSet.setCommand("SELECT * FROM prices limit 5");
+            rowSet.execute();
+            System.out.println(rowSet.toString());
             String results = "";
 
-            ResultSetMetaData metaData = resultSet.getMetaData();
+            ResultSetMetaData metaData = rowSet.getMetaData();
 
             int numberOfColumns = metaData.getColumnCount();
-
+            String temp;
             for (int i = 1; i < numberOfColumns; i++) {
-                String temp =  String.format( "%-23s|",metaData.getColumnName(i));
+                temp = String.format("%-23s|", metaData.getColumnName(i));
                 results += temp;
             }
-
             results += "\n";
 
-            while (resultSet.next()) {
+            while (rowSet.next()) {
+
                 for (int i = 1; i < numberOfColumns; i++) {
                     //String temp = String.format("%-20s= %s" ,resultSet.getObject(i) );
-                    String temp =  String.format( "%-23s|",resultSet.getObject(i));
-                    
+                    temp = String.format("%-23s|", rowSet.getObject(i));
+
                     results += temp;
-
-                    //"%-10s %-10s %-10s\n"
                 }//end for
-
                 results += "\n";
-            }//end while
-
-            statement.close();
-            connection.close();
-
-            output.setText(results);
-        }//end try
-        catch (SQLException sqlex) {
-            JOptionPane.showMessageDialog(null, sqlex.toString());
-            System.exit(0);
-        }
 
     }
 
